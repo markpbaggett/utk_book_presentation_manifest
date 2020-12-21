@@ -5,7 +5,8 @@ class ResourceIndexSearch:
     def __init__(self):
         self.risearch_endpoint = "http://localhost:8080/fedora/risearch"
 
-    def escape_query(self, query):
+    @staticmethod
+    def escape_query(query):
         return (
             query.replace("*", "%2A")
             .replace(" ", "%20")
