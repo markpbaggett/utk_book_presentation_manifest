@@ -14,6 +14,10 @@ class ResourceIndexSearch:
             .replace(":", "%3A")
             .replace(">", "%3E")
             .replace("#", "%23")
+            .replace("\n", "")
+            .replace("?", "%3F")
+            .replace("{", "%7B")
+            .replace("}", "%7D")
         )
 
 
@@ -58,6 +62,16 @@ class TriplesSearch(ResourceIndexSearch):
         r = requests.get(f"{self.base_url}&query={spo_query}")
         return r.content.decode("utf-8")
 
+    def get_pages_and_page_numbers(self, book_pid):
+        if self.language != "sparql":
+            raise Exception(
+                f"You must use sparql as the language for this method.  You used {self.language}."
+            )
+        sparql_query = self.escape_query(
+            f"""SELECT ?page ?pagenumber FROM <#ri> WHERE {{ ?page <info:fedora/fedora-system:def/relations-external#isMemberOf> <info:fedora/{book_pid}>. ?page <http://islandora.ca/ontology/relsext#isPageNumber> ?pagenumber. }} LIMIT 10"""
+        )
+        return requests.get(f"{self.base_url}&query={sparql_query}")
+
 
 if __name__ == "__main__":
-    x = TriplesSearch().get_pages_from_a_book("test:1")
+    x = TriplesSearch(language="sparql").get_pages_and_page_numbers("agrtfhs:2275")
