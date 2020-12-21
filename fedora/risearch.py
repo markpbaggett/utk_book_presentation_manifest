@@ -19,9 +19,11 @@ class ResourceIndexSearch:
 class TriplesSearch(ResourceIndexSearch):
     def __init__(self, language="spo", riformat="Turtle"):
         ResourceIndexSearch.__init__(self)
+        self.language = self.__validate_language(language)
+        self.format = self.__validate_format(riformat)
         self.base_url = (
             f"{self.risearch_endpoint}?type=triples"
-            f"&lang={self.__validate_language(language)}&format={self.__validate_format(riformat)}"
+            f"&lang={self.language}&format={self.format}"
         )
 
     @staticmethod
@@ -45,6 +47,10 @@ class TriplesSearch(ResourceIndexSearch):
             )
 
     def get_pages_from_a_book(self, book_pid):
+        if self.language != "spo":
+            raise Exception(
+                f"You must use spo as language for this method.  You used {self.language}."
+            )
         spo_query = self.escape_query(
             f"* <info:fedora/fedora-system:def/relations-external#isMemberOf> <info:fedora/{book_pid}>"
         )
