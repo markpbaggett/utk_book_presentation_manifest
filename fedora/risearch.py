@@ -1,6 +1,19 @@
+import requests
+
+
 class ResourceIndexSearch:
     def __init__(self):
         self.risearch_endpoint = "http://localhost:8080/fedora/risearch"
+
+    def escape_query(self, query):
+        return (
+            query.replace("*", "%2A")
+            .replace(" ", "%20")
+            .replace("<", "%3C")
+            .replace(":", "%3A")
+            .replace(">", "%3E")
+            .replace("#", "%23")
+        )
 
 
 class TriplesSearch(ResourceIndexSearch):
@@ -30,3 +43,14 @@ class TriplesSearch(ResourceIndexSearch):
             raise Exception(
                 f"Supplied language is not valid: {language}. Must be one of {valid_languages}."
             )
+
+    def get_pages_from_a_book(self, book_pid):
+        spo_query = self.escape_query(
+            f"* <info:fedora/fedora-system:def/relations-external#isMemberOf> <info:fedora/{book_pid}>"
+        )
+        r = requests.get(f"{self.base_url}&query={spo_query}")
+        return r.content.decode("utf-8")
+
+
+if __name__ == "__main__":
+    x = TriplesSearch().get_pages_from_a_book("test:1")
