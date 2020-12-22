@@ -136,7 +136,7 @@ class TuplesSearch(ResourceIndexSearch):
             .content.decode("utf-8")
             .split("\n")
         )
-        return self.clean_csv_results(results, "info:fedora/")
+        return self.__clean_csv_results(results, "info:fedora/")
 
 
 if __name__ == "__main__":
