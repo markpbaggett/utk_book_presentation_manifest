@@ -71,7 +71,9 @@ class TriplesSearch(ResourceIndexSearch):
             f"<info:fedora/fedora-system:def/relations-external#isMemberOf> <info:fedora/{book_pid}>. ?page "
             f"<http://islandora.ca/ontology/relsext#isPageNumber> ?pagenumber. }} LIMIT 10"
         )
-        return requests.get(f"{self.base_url}&query={sparql_query}")
+        return requests.get(f"{self.base_url}&query={sparql_query}").content.decode(
+            "utf-8"
+        )
 
 
 class TuplesSearch(ResourceIndexSearch):
@@ -97,7 +99,9 @@ class TuplesSearch(ResourceIndexSearch):
             f"<http://islandora.ca/ontology/relsext#> SELECT $page $numbers FROM <#ri> WHERE {{ $page "
             f"fedora-rels-ext:isMemberOf <info:fedora/{book_pid}> ; isl-rels-ext:isPageNumber $numbers .}}"
         )
-        return requests.get(f"{self.base_url}&query={sparql_query}")
+        return requests.get(f"{self.base_url}&query={sparql_query}").content.decode(
+            "utf-8"
+        )
 
 
 if __name__ == "__main__":
