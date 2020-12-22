@@ -62,6 +62,10 @@ class TriplesSearch(ResourceIndexSearch):
         return r.content.decode("utf-8")
 
     def get_pages_and_page_numbers(self, book_pid):
+        """
+        @TODO Returns a 500 Internal Server Error: org.mulgara.query.rdf.LiteralImpl cannot be cast to org.jrdf.graph.PredicateNode
+
+        """
         if self.language != "sparql":
             raise Exception(
                 f"You must use sparql as the language for this method.  You used {self.language}."
@@ -88,7 +92,35 @@ class TuplesSearch(ResourceIndexSearch):
             f"&lang={self.language}&format={self.format}"
         )
 
+    @staticmethod
+    def __clean_csv_results(split_results, uri_prefix):
+        results = []
+        for result in split_results:
+            if result.startswith(uri_prefix):
+                new_result = result.split(",")
+                results.append(
+                    (new_result[0].replace(uri_prefix, ""), int(new_result[1]))
+                )
+        return sorted(results, key=lambda x: x[1])
+
     def get_pages_and_page_numbers(self, book_pid):
+        """
+        Returns a sorted list of tuples with the page and page number for the book.
+
+        Args:
+            book_pid (str): The PID of the book.
+
+        Returns:
+            list: A sorted list of tuples with the pid of the page and the corresponding page number.
+
+        Example:
+            >>> TuplesSearch(language="sparql").get_pages_and_page_numbers("agrtfhs:2275")
+            [('agrtfhs:2279', 1), ('agrtfhs:2278', 2), ('agrtfhs:2291', 3), ('agrtfhs:2290', 4), ('agrtfhs:2289', 5),
+            ('agrtfhs:2288', 6), ('agrtfhs:2287', 7), ('agrtfhs:2286', 8), ('agrtfhs:2285', 9), ('agrtfhs:2284', 10),
+            ('agrtfhs:2283', 11), ('agrtfhs:2282', 12), ('agrtfhs:2281', 13), ('agrtfhs:2280', 14),
+            ('agrtfhs:2277', 15), ('agrtfhs:2276', 16)]
+
+        """
         if self.language != "sparql":
             raise Exception(
                 f"You must use sparql as the language for this method.  You used {self.language}."
@@ -99,9 +131,12 @@ class TuplesSearch(ResourceIndexSearch):
             f"<http://islandora.ca/ontology/relsext#> SELECT $page $numbers FROM <#ri> WHERE {{ $page "
             f"fedora-rels-ext:isMemberOf <info:fedora/{book_pid}> ; isl-rels-ext:isPageNumber $numbers .}}"
         )
-        return requests.get(f"{self.base_url}&query={sparql_query}").content.decode(
-            "utf-8"
+        results = (
+            requests.get(f"{self.base_url}&query={sparql_query}")
+            .content.decode("utf-8")
+            .split("\n")
         )
+        return self.clean_csv_results(results, "info:fedora/")
 
 
 if __name__ == "__main__":
