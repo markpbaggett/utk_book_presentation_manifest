@@ -105,6 +105,6 @@ class TuplesSearch(ResourceIndexSearch):
 
 
 if __name__ == "__main__":
-    x = TuplesSearch(language="sparql").get_pages_and_page_numbers("test:1")
-    # x = TriplesSearch(language="sparql").get_pages_and_page_numbers("test:1")
+    x = TuplesSearch(language="sparql").get_pages_and_page_numbers("agrtfhs:2275")
+    # x = TriplesSearch(language="sparql").get_pages_and_page_numbers("agrtfhs:2275")
     print(x)
