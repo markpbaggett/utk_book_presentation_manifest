@@ -9,14 +9,48 @@ class Manifest:
 
 
 class Canvas:
-    def __init__(self, label, info_json):
+    def __init__(self, label, info_json, pid):
+        self.info = self.__read_info_json(info_json)
+        self.pid = pid
         self.identifier = f"http://{uuid4()}"
         self.label = label
-        self.info = self.__read_info_json(info_json)
+        self.height = self.info["height"]
+        self.width = self.info["width"]
 
     @staticmethod
     def __read_info_json(uri):
         return requests.get(uri).json()
+
+    def __build_images(self):
+        return {
+            "@context": "http://iiif.io/api/presentation/2/context.json",
+            "@id": f"http://{uuid4()}",
+            "@type": "oa:Annotation",
+            "motivation": "sc:painting",
+            "resource": {
+                "@id": f"{self.info['@id']}/full/full/0/default.jpg",
+                "@type": "dctypes:Image",
+                "format": "image/jpeg",
+                "service": {
+                    "@context": self.info["@context"],
+                    "@id": self.info["@id"],
+                    "profile": self.info["profile"],
+                },
+                "height": self.height,
+                "width": self.width,
+            },
+            "on": self.identifier,
+        }
+
+    def build_canvas(self):
+        return {
+            "@id": self.identifier,
+            "@type": "sc:Canvas",
+            "label": self.label,
+            "height": self.height,
+            "width": self.width,
+            "images": [self.__build_images()],
+        }
 
 
 if __name__ == "__main__":
@@ -43,5 +77,5 @@ if __name__ == "__main__":
         f"https://digital.lib.utk.edu/iiif/2/collections%7Eislandora%7Eobject%7E{book_pages[1][0]}"
         f"%7Edatastream%7EJP2/info.json"
     )
-    x = Canvas(book_pages[1][0], sample_info_uri)
-    print(x.info)
+    x = Canvas(book_pages[1][0], sample_info_uri, book_pages[1][0])
+    print(x.build_canvas())
