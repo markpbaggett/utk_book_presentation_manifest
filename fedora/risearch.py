@@ -91,13 +91,13 @@ class TuplesSearch(ResourceIndexSearch):
             raise Exception(
                 f"You must use sparql as the language for this method.  You used {self.language}."
             )
-        sparql_query = (
+        sparql_query = self.escape_query(
             f"PREFIX fedora-model: <info:fedora/fedora-system:def/model#> PREFIX fedora-rels-ext: "
             f"<info:fedora/fedora-system:def/relations-external#> PREFIX isl-rels-ext: "
             f"<http://islandora.ca/ontology/relsext#> SELECT $page $numbers FROM <#ri> WHERE {{ $page "
             f"fedora-rels-ext:isMemberOf <info:fedora/{book_pid}> ; isl-rels-ext:isPageNumber $numbers .}}"
         )
-        return self.escape_query(sparql_query)
+        return requests.get(f"{self.base_url}&query={sparql_query}")
 
 
 if __name__ == "__main__":
