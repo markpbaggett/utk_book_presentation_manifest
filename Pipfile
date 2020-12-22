@@ -8,6 +8,8 @@ black = "*"
 
 [packages]
 requests = "*"
+uuid = "*"
+xmltodict = "*"
 
 [requires]
 python_version = "3"
