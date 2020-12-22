@@ -18,6 +18,7 @@ class ResourceIndexSearch:
             .replace("?", "%3F")
             .replace("{", "%7B")
             .replace("}", "%7D")
+            .replace("/", "%2F")
         )
 
     def validate_language(self, language):
@@ -66,7 +67,9 @@ class TriplesSearch(ResourceIndexSearch):
                 f"You must use sparql as the language for this method.  You used {self.language}."
             )
         sparql_query = self.escape_query(
-            f"""SELECT ?page ?pagenumber FROM <#ri> WHERE {{ ?page <info:fedora/fedora-system:def/relations-external#isMemberOf> <info:fedora/{book_pid}>. ?page <http://islandora.ca/ontology/relsext#isPageNumber> ?pagenumber. }} LIMIT 10"""
+            f"SELECT ?page ?pagenumber FROM <#ri> WHERE {{ ?page "
+            f"<info:fedora/fedora-system:def/relations-external#isMemberOf> <info:fedora/{book_pid}>. ?page "
+            f"<http://islandora.ca/ontology/relsext#isPageNumber> ?pagenumber. }} LIMIT 10"
         )
         return requests.get(f"{self.base_url}&query={sparql_query}")
 
@@ -83,6 +86,21 @@ class TuplesSearch(ResourceIndexSearch):
             f"&lang={self.language}&format={self.format}"
         )
 
+    def get_pages_and_page_numbers(self, book_pid):
+        if self.language != "sparql":
+            raise Exception(
+                f"You must use sparql as the language for this method.  You used {self.language}."
+            )
+        sparql_query = (
+            f"PREFIX fedora-model: <info:fedora/fedora-system:def/model#> PREFIX fedora-rels-ext: "
+            f"<info:fedora/fedora-system:def/relations-external#> PREFIX isl-rels-ext: "
+            f"<http://islandora.ca/ontology/relsext#> SELECT $page $numbers FROM <#ri> WHERE {{ $page "
+            f"fedora-rels-ext:isMemberOf <info:fedora/{book_pid}> ; isl-rels-ext:isPageNumber $numbers .}}"
+        )
+        return self.escape_query(sparql_query)
+
 
 if __name__ == "__main__":
-    x = TuplesSearch(language="sparql")
+    x = TuplesSearch(language="sparql").get_pages_and_page_numbers("test:1")
+    # x = TriplesSearch(language="sparql").get_pages_and_page_numbers("test:1")
+    print(x)
