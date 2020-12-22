@@ -1,4 +1,5 @@
 from uuid import uuid4
+import requests
 
 
 class Manifest:
@@ -11,7 +12,11 @@ class Canvas:
     def __init__(self, label, info_json):
         self.identifier = f"http://{uuid4()}"
         self.label = label
-        self.uri = info_json
+        self.info = self.__read_info_json(info_json)
+
+    @staticmethod
+    def __read_info_json(uri):
+        return requests.get(uri).json()
 
 
 if __name__ == "__main__":
@@ -34,3 +39,9 @@ if __name__ == "__main__":
         ("agrtfhs:2277", 15),
         ("agrtfhs:2276", 16),
     ]
+    sample_info_uri = (
+        f"https://digital.lib.utk.edu/iiif/2/collections%7Eislandora%7Eobject%7E{book_pages[1][0]}"
+        f"%7Edatastream%7EJP2/info.json"
+    )
+    x = Canvas(book_pages[1][0], sample_info_uri)
+    print(x.info)
