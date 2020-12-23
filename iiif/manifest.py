@@ -38,7 +38,7 @@ class Manifest:
                     "@type": "sc:Sequence",
                     "viewingHint": self.viewing_hint,
                     "label": [{"@value": "Normal Sequence", "@language": "en"}],
-                    "canvases": [self.canvases],
+                    "canvases": self.canvases,
                 }
             ],
             "structures": [],
