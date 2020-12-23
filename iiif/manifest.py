@@ -1,5 +1,6 @@
 from uuid import uuid4
 import requests
+import json
 
 
 class Manifest:
@@ -18,6 +19,8 @@ class Manifest:
         self.metadata = descriptive_metadata["metadata"]
         self.canvases = self.__get_canvases(pages, server_uri)
         self.viewing_hint = viewing_hint
+        self.manifest = self.__build_manifest()
+        self.manifest_json = json.dumps(self.manifest, indent=4)
 
     def __build_manifest(self):
         return {
@@ -25,6 +28,7 @@ class Manifest:
             "@id": self.identifier,
             "@type": "sc:Manifest",
             "label": self.label,
+            "metadata": [],
             "description": [{"@value": self.description, "@language": "en"}],
             "license": self.license,
             "attribution": self.attribution,
@@ -116,9 +120,14 @@ if __name__ == "__main__":
         ("agrtfhs:2277", 15),
         ("agrtfhs:2276", 16),
     ]
-    sample_info_uri = (
-        f"https://digital.lib.utk.edu/iiif/2/collections%7Eislandora%7Eobject%7E{book_pages[1][0]}"
-        f"%7Edatastream%7EJP2/info.json"
-    )
-    x = Canvas(book_pages[1][0], sample_info_uri)
-    print(x.build_canvas())
+    metadata = {
+        "label": "Tennessee farm and home science, progress report 46, April - June 1963",
+        "description": "Quarterly newsletter from Knoxville, Tennessee, covering farming and home economics.",
+        "license": "http://rightsstatements.org/vocab/NoC-US/1.0/",
+        "attribution": "No Copyright - United States",
+        "metadata": [],
+    }
+    y = Manifest(metadata, book_pages).manifest
+    j = json.dumps(y, indent=4)
+    with open("sample_manifest.json", "w") as manifest:
+        manifest.write(j)
