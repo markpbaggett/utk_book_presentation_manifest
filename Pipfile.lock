@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "632bc2fc8542e50ea1a2239e052c78704c3d641c95dbd05316ef3f3f59ea0790"
+            "sha256": "c4bf057fc32f372324e75b0d3cb7334a89c8082367cee297ff68663db92b1ea8"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -30,6 +30,13 @@
             ],
             "version": "==4.0.0"
         },
+        "defusedxml": {
+            "hashes": [
+                "sha256:8ede8ba04cf5bf7999e1492fa77df545db83717f52c5eab625f97228ebd539bf",
+                "sha256:aa621655d72cdd30f57073893b96cd0c3831a85b08b8e4954531bdac47e3e8c8"
+            ],
+            "version": "==0.7.0rc1"
+        },
         "idna": {
             "hashes": [
                 "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6",
@@ -44,6 +51,14 @@
             ],
             "index": "pypi",
             "version": "==2.25.1"
+        },
+        "tripoli": {
+            "hashes": [
+                "sha256:6af87e1becf66b2b28b2fed0b4dec95366ca5875f9172a196898e56f4a68445b",
+                "sha256:b85ad96e7ed0233779142c9464a973df4018bd9cb3eec2c8629cd6a2c6ff45a4"
+            ],
+            "index": "pypi",
+            "version": "==2.0.0"
         },
         "urllib3": {
             "hashes": [
