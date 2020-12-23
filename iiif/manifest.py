@@ -3,15 +3,58 @@ import requests
 
 
 class Manifest:
-    def __init__(self, viewing_hint: "paged"):
+    def __init__(
+        self,
+        descriptive_metadata,
+        pages,
+        server_uri="https://digital.lib.utk.edu/",
+        viewing_hint="paged",
+    ):
         self.identifier = f"http://{uuid4()}"
+        self.label = descriptive_metadata["label"]
+        self.description = descriptive_metadata["description"]
+        self.license = descriptive_metadata["license"]
+        self.attribution = descriptive_metadata["attribution"]
+        self.metadata = descriptive_metadata["metadata"]
+        self.canvases = self.__get_canvases(pages, server_uri)
         self.viewing_hint = viewing_hint
+
+    def __build_manifest(self):
+        return {
+            "@context": "http://iiif.io/api/presentation/2/context.json",
+            "@id": self.identifier,
+            "@type": "sc:Manifest",
+            "label": self.label,
+            "description": [{"@value": self.description, "@language": "en"}],
+            "license": self.license,
+            "attribution": self.attribution,
+            "sequences": [
+                {
+                    "@id": f"http://{uuid4()}",
+                    "@type": "sc:Sequence",
+                    "viewingHint": self.viewing_hint,
+                    "label": [{"@value": "Normal Sequence", "@language": "en"}],
+                    "canvases": [self.canvases],
+                }
+            ],
+            "structures": [],
+            "thumbnail": {"@id": f"http://{uuid4()}"},
+        }
+
+    @staticmethod
+    def __get_canvases(list_of_pages, server):
+        return [
+            Canvas(
+                page[0],
+                f"{server}iiif/2/collections%7Eislandora%7Eobject%7E{page[0]}%7Edatastream%7EJP2/info.json",
+            ).build_canvas()
+            for page in list_of_pages
+        ]
 
 
 class Canvas:
-    def __init__(self, label, info_json, pid):
+    def __init__(self, label, info_json):
         self.info = self.__read_info_json(info_json)
-        self.pid = pid
         self.identifier = f"http://{uuid4()}"
         self.label = label
         self.height = self.info["height"]
@@ -77,5 +120,5 @@ if __name__ == "__main__":
         f"https://digital.lib.utk.edu/iiif/2/collections%7Eislandora%7Eobject%7E{book_pages[1][0]}"
         f"%7Edatastream%7EJP2/info.json"
     )
-    x = Canvas(book_pages[1][0], sample_info_uri, book_pages[1][0])
+    x = Canvas(book_pages[1][0], sample_info_uri)
     print(x.build_canvas())
