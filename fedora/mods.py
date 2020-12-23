@@ -87,7 +87,16 @@ class MODSScraper:
         """
         return []
 
+    def build_iiif_descriptive_metadata(self):
+        return {
+            "label": self.label,
+            "description": self.description,
+            "license": self.get_license_or_rights(),
+            "attribution": self.get_attribution(),
+            "metadata": [],
+        }
+
 
 if __name__ == "__main__":
     x = MODSScraper("agrtfhs:2275")
-    print(x.label)
+    print(x.build_iiif_descriptive_metadata())
