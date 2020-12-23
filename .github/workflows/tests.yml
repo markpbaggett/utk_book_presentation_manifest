@@ -12,9 +12,7 @@ jobs:
         with:
           command: install -d # Install all dependencies, including development ones
       - name: Initialize Packages Across Project
-        uses: VaultVulp/action-pipenv@v2.0.1
-        with:
-          command: export PYTHONPATH="${PYTHONPATH}:utk_book_to_manifest/"
+        run: export PYTHONPATH="${PYTHONPATH}:utk_book_to_manifest/"
       - name: Run Unit Tests
         uses: VaultVulp/action-pipenv@v2.0.1
         with:
