@@ -1,4 +1,5 @@
 hooks/*
 fedora/__pycache__/
 iiif/__pycache__/
+tests/__pycache__/
 .idea/
