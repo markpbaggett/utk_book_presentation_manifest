@@ -85,7 +85,10 @@ class MODSScraper:
 
         A manifest should have one or more metadata pairs associated with it describing the object or work.
         """
-        return [{"label": "Topics", "value": self.get_topics()}]
+        return [
+            {"label": "Topics", "value": self.get_topics()},
+            {"label": "Table of Contents", "value": self.get_table_of_contents()},
+        ]
 
     def get_topics(self):
         """
@@ -104,6 +107,13 @@ class MODSScraper:
         else:
             return []
 
+    def get_table_of_contents(self):
+        """
+        Gets the table of contents if one exists.
+        """
+        if "tableOfContents" in self.mods_dict["mods"]:
+            return self.mods_dict["mods"]["tableOfContents"]
+
     def build_iiif_descriptive_metadata(self):
         return {
             "label": self.label,
@@ -116,4 +126,4 @@ class MODSScraper:
 
 if __name__ == "__main__":
     x = MODSScraper("agrtfhs:2275")
-    print(x.build_iiif_descriptive_metadata())
+    print(x.build_iiif_descriptive_metadata()["metadata"])
