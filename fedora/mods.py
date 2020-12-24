@@ -6,16 +6,16 @@ class MODSScraper:
     def __init__(
         self, book_pid, islandora_frontend="https://digital.lib.utk.edu/collections/"
     ):
-        self.mods_dict = self.__get_mods(
+        self.mods_xml = self.__get_mods(
             f"{islandora_frontend}/islandora/object/{book_pid}/datastream/MODS"
         )
+        self.mods_dict = xmltodict.parse(self.mods_xml)
         self.label = self.get_title()
         self.description = self.get_abstract()
 
     @staticmethod
     def __get_mods(uri):
-        r = requests.get(uri).content.decode("utf-8")
-        return xmltodict.parse(r)
+        return requests.get(uri).content.decode("utf-8")
 
     def get_title(self):
         """
@@ -85,7 +85,24 @@ class MODSScraper:
 
         A manifest should have one or more metadata pairs associated with it describing the object or work.
         """
-        return []
+        return [{"label": "Topics", "value": self.get_topics()}]
+
+    def get_topics(self):
+        """
+        Gets topics from a MODS record.
+
+        @todo: This code is somewhat problematic.  It assumes that there is more than one subject.  If there was only
+        one subject, this would throw an exception.
+
+        """
+        if "subject" in self.mods_dict["mods"]:
+            return [
+                subject["topic"]
+                for subject in self.mods_dict["mods"]["subject"]
+                if "topic" in subject
+            ]
+        else:
+            return []
 
     def build_iiif_descriptive_metadata(self):
         return {
@@ -93,7 +110,7 @@ class MODSScraper:
             "description": self.description,
             "license": self.get_license_or_rights(),
             "attribution": self.get_attribution(),
-            "metadata": [],
+            "metadata": self.get_other_metadata(),
         }
 
 
