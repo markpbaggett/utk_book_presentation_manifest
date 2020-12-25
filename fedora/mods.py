@@ -88,6 +88,7 @@ class MODSScraper:
         return [
             {"label": "Topics", "value": self.get_topics()},
             {"label": "Table of Contents", "value": self.get_table_of_contents()},
+            {"label": "Publisher", "value": self.get_publisher()},
         ]
 
     def get_topics(self):
@@ -106,6 +107,16 @@ class MODSScraper:
             ]
         else:
             return []
+
+    def get_publisher(self):
+        """
+        Gets the publisher of a book if one exists.
+
+        """
+        if "publisher" in self.mods_dict["mods"]["originInfo"]:
+            return self.mods_dict["mods"]["originInfo"]["publisher"]
+        else:
+            return ""
 
     def get_table_of_contents(self):
         """
