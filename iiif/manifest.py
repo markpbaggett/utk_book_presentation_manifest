@@ -28,7 +28,7 @@ class Manifest:
             "@id": self.identifier,
             "@type": "sc:Manifest",
             "label": self.label,
-            "metadata": [],
+            "metadata": self.metadata,
             "description": [{"@value": self.description, "@language": "en"}],
             "license": self.license,
             "attribution": self.attribution,
@@ -125,7 +125,22 @@ if __name__ == "__main__":
         "description": "Quarterly newsletter from Knoxville, Tennessee, covering farming and home economics.",
         "license": "http://rightsstatements.org/vocab/NoC-US/1.0/",
         "attribution": "No Copyright - United States",
-        "metadata": [],
+        "metadata": [
+            {
+                "label": "Topics",
+                "value": [
+                    "Agriculture--Tennessee",
+                    "Farm management",
+                    "Livestock",
+                    "Agricultural chemicals",
+                    "Agricultural experiment stations",
+                ],
+            },
+            {
+                "label": "Table of Contents",
+                "value": 'Examining beef cows for pregnancies - Personnel summary - Systemics increase wheat forage - Predict apple yields with leaf blade analysis? - Cows need a "milk break" - Growing corn on the plateau - Tests with phosphorus for pigs - Farm credit shifts, 1950 to 1962 - Costs of making whole-hog sausage - New bulletins',
+            },
+        ],
     }
     y = Manifest(metadata, book_pages).manifest
     j = json.dumps(y, indent=4)
