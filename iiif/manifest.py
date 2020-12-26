@@ -18,7 +18,7 @@ class Manifest:
         self.attribution = descriptive_metadata["attribution"]
         self.metadata = descriptive_metadata["metadata"]
         self.canvases = self.__get_canvases(pages, server_uri)
-        self.viewing_hint = viewing_hint
+        self.viewing_hint = self.__validate_viewing_hint(viewing_hint)
         self.manifest = self.__build_manifest()
         self.manifest_json = json.dumps(self.manifest, indent=4)
 
@@ -44,6 +44,17 @@ class Manifest:
             "structures": [],
             "thumbnail": self.__build_thumbnail_section(),
         }
+
+    @staticmethod
+    def __validate_viewing_hint(value):
+        valid = ("individuals", "paged", "continuous")
+        if value not in valid:
+            raise Exception(
+                f"{value} is not a valid viewingHint for manifests.  For more information, see: "
+                f"https://iiif.io/api/presentation/2.1/#viewinghint"
+            )
+        else:
+            return value
 
     @staticmethod
     def __get_canvases(list_of_pages, server):
