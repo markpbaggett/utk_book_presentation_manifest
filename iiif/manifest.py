@@ -42,7 +42,7 @@ class Manifest:
                 }
             ],
             "structures": [],
-            "thumbnail": {"@id": f"http://{uuid4()}"},
+            "thumbnail": self.__build_thumbnail_section(),
         }
 
     @staticmethod
@@ -54,6 +54,25 @@ class Manifest:
             ).build_canvas()
             for page in list_of_pages
         ]
+
+    def __build_thumbnail_section(self):
+        """
+        @todo: Mirador doesn't display a thumbnail for some reason when this is set according to docs. What's expected?
+        """
+        return {
+            "@id": self.canvases[0]["images"][0]["resource"]["@id"].replace(
+                "full/full", "full/,150"
+            ),
+            "service": {
+                "@context": self.canvases[0]["images"][0]["resource"]["service"][
+                    "@context"
+                ],
+                "@id": f"http://{uuid4()}",
+                "profile": self.canvases[0]["images"][0]["resource"]["service"][
+                    "profile"
+                ][0],
+            },
+        }
 
 
 class Canvas:
@@ -142,7 +161,9 @@ if __name__ == "__main__":
             },
         ],
     }
-    y = Manifest(metadata, book_pages).manifest
+    manifest_object = Manifest(metadata, book_pages)
+    y = manifest_object.manifest
     j = json.dumps(y, indent=4)
     with open("sample_manifest.json", "w") as manifest:
         manifest.write(j)
+    # print(manifest_object.build_thumbnail_section())
