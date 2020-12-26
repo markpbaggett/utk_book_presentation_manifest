@@ -10,6 +10,7 @@ class Manifest:
         pages,
         server_uri="https://digital.lib.utk.edu/",
         viewing_hint="paged",
+        viewing_direction="left-to-right",
     ):
         self.identifier = f"http://{uuid4()}"
         self.label = descriptive_metadata["label"]
@@ -19,6 +20,7 @@ class Manifest:
         self.metadata = descriptive_metadata["metadata"]
         self.canvases = self.__get_canvases(pages, server_uri)
         self.viewing_hint = self.__validate_viewing_hint(viewing_hint)
+        self.viewing_direction = self.__validate_viewing_direction(viewing_direction)
         self.manifest = self.__build_manifest()
         self.manifest_json = json.dumps(self.manifest, indent=4)
 
@@ -37,6 +39,7 @@ class Manifest:
                     "@id": f"http://{uuid4()}",
                     "@type": "sc:Sequence",
                     "viewingHint": self.viewing_hint,
+                    "viewingDirection": self.viewing_direction,
                     "label": [{"@value": "Normal Sequence", "@language": "en"}],
                     "canvases": self.canvases,
                 }
@@ -52,6 +55,17 @@ class Manifest:
             raise Exception(
                 f"{value} is not a valid viewingHint for manifests.  For more information, see: "
                 f"https://iiif.io/api/presentation/2.1/#viewinghint"
+            )
+        else:
+            return value
+
+    @staticmethod
+    def __validate_viewing_direction(value):
+        valid = ("left-to-right", "right-to-left", "top-to-bottom", "bottom-to-top")
+        if value not in valid:
+            raise Exception(
+                f"{value} is not a valid viewingDirection for sequences.  For more information, see: "
+                f"https://iiif.io/api/presentation/2.1/#viewingdirection"
             )
         else:
             return value
