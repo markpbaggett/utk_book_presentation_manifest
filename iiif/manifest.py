@@ -18,6 +18,7 @@ class Manifest:
         self.license = descriptive_metadata["license"]
         self.attribution = descriptive_metadata["attribution"]
         self.metadata = descriptive_metadata["metadata"]
+        self.navigation_date = self.__check_for_navigation_date(descriptive_metadata)
         self.canvases = self.__get_canvases(pages, server_uri)
         self.viewing_hint = self.__validate_viewing_hint(viewing_hint)
         self.viewing_direction = self.__validate_viewing_direction(viewing_direction)
@@ -25,7 +26,7 @@ class Manifest:
         self.manifest_json = json.dumps(self.manifest, indent=4)
 
     def __build_manifest(self):
-        return {
+        metadata = {
             "@context": "http://iiif.io/api/presentation/2/context.json",
             "@id": self.identifier,
             "@type": "sc:Manifest",
@@ -47,6 +48,9 @@ class Manifest:
             "structures": [],
             "thumbnail": self.__build_thumbnail_section(),
         }
+        if self.navigation_date != "":
+            metadata["navDate"] = self.navigation_date
+        return metadata
 
     @staticmethod
     def __validate_viewing_hint(value):
@@ -98,6 +102,13 @@ class Manifest:
                 ][0],
             },
         }
+
+    @staticmethod
+    def __check_for_navigation_date(metadata):
+        if "navDate" in metadata:
+            return metadata["navDate"]
+        else:
+            return ""
 
 
 class Canvas:
@@ -169,6 +180,7 @@ if __name__ == "__main__":
         "description": "Quarterly newsletter from Knoxville, Tennessee, covering farming and home economics.",
         "license": "http://rightsstatements.org/vocab/NoC-US/1.0/",
         "attribution": "No Copyright - United States",
+        "navDate": "1963-01-01T00:00:00Z",
         "metadata": [
             {
                 "label": "Topics",
