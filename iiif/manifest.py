@@ -14,6 +14,7 @@ class Manifest:
     ):
         self.identifier = f"http://{uuid4()}"
         self.label = descriptive_metadata["label"]
+        self.related = f'{server_uri}/collections/islandora/object/{descriptive_metadata["book_pid"]}'
         self.description = descriptive_metadata["description"]
         self.license = descriptive_metadata["license"]
         self.attribution = descriptive_metadata["attribution"]
@@ -35,6 +36,10 @@ class Manifest:
             "description": [{"@value": self.description, "@language": "en"}],
             "license": self.license,
             "attribution": self.attribution,
+            "related": {
+                "@id": self.related,
+                "format": "text/html",
+            },
             "sequences": [
                 {
                     "@id": f"http://{uuid4()}",
@@ -176,6 +181,7 @@ if __name__ == "__main__":
     ]
     metadata = {
         "label": "Tennessee farm and home science, progress report 46, April - June 1963",
+        "book_pid": "agrtfhs:2275",
         "description": "Quarterly newsletter from Knoxville, Tennessee, covering farming and home economics.",
         "license": "http://rightsstatements.org/vocab/NoC-US/1.0/",
         "attribution": "No Copyright - United States",
