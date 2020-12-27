@@ -40,6 +40,11 @@ class Manifest:
                 "@id": self.related,
                 "format": "text/html",
             },
+            "seeAlso": {
+                "@id": f"{self.related}/datastream/MODS",
+                "format": "application/xml",
+                "profile": "http://www.loc.gov/standards/mods/v3/mods-3-5.xsd",
+            },
             "sequences": [
                 {
                     "@id": f"http://{uuid4()}",
