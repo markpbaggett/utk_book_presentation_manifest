@@ -40,11 +40,18 @@ class Manifest:
                 "@id": self.related,
                 "format": "text/html",
             },
-            "seeAlso": {
-                "@id": f"{self.related}/datastream/MODS",
-                "format": "application/xml",
-                "profile": "http://www.loc.gov/standards/mods/v3/mods-3-5.xsd",
-            },
+            "seeAlso": [
+                {
+                    "@id": f"{self.related}/datastream/MODS",
+                    "format": "application/xml",
+                    "profile": "http://www.loc.gov/standards/mods/v3/mods-3-5.xsd",
+                },
+                {
+                    "@id": f"{self.related}/datastream/RELS-EXT",
+                    "format": "application/rdf+xml",
+                    "profile": "https://fedora.info/definitions/1/0/fedora-relsext-ontology.rdfs",
+                },
+            ],
             "sequences": [
                 {
                     "@id": f"http://{uuid4()}",
