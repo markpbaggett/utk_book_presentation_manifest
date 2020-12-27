@@ -85,9 +85,6 @@ class Manifest:
         ]
 
     def __build_thumbnail_section(self):
-        """
-        @todo: Mirador doesn't display a thumbnail for some reason when this is set according to docs. What's expected?
-        """
         return {
             "@id": self.canvases[0]["images"][0]["resource"]["@id"].replace(
                 "full/full", "full/,150"
@@ -96,7 +93,9 @@ class Manifest:
                 "@context": self.canvases[0]["images"][0]["resource"]["service"][
                     "@context"
                 ],
-                "@id": f"http://{uuid4()}",
+                "@id": self.canvases[0]["images"][0]["resource"]["@id"].split(
+                    "full/full"
+                )[0],
                 "profile": self.canvases[0]["images"][0]["resource"]["service"][
                     "profile"
                 ][0],
