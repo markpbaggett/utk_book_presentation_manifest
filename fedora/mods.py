@@ -1,5 +1,6 @@
 import requests
 import xmltodict
+import arrow
 
 
 class MODSScraper:
@@ -12,6 +13,7 @@ class MODSScraper:
         self.mods_dict = xmltodict.parse(self.mods_xml)
         self.label = self.get_title()
         self.description = self.get_abstract()
+        self.navigation_date = self.get_navigation_date()
 
     @staticmethod
     def __get_mods(uri):
@@ -125,16 +127,63 @@ class MODSScraper:
         if "tableOfContents" in self.mods_dict["mods"]:
             return self.mods_dict["mods"]["tableOfContents"]
 
+    def get_navigation_date(self):
+        """
+        Attempts to get a navigation date for the presentation manifest based on the MODS record and converts it to an
+        xsd:dateTime literal in UTC in the format of “YYYY-MM-DDThh:mm:ssZ.”
+
+        The 2.1 docs define this as, "a date that the client can use for navigation purposes when presenting the
+        resource to the user in a time-based user interface, such as a calendar or timeline. The value must be an
+        xsd:dateTime literal in UTC, expressed in the form “YYYY-MM-DDThh:mm:ssZ”. If the exact time is not known,
+        then “00:00:00” should be used. Similarly, the month or day should be 01 if not known. There must be at most
+        one navDate associated with any given resource. More descriptive date ranges, intended for display directly to
+        the user, should be included in the metadata property for human consumption. A collection or manifest may have
+        exactly one navigation date associated with it."
+
+        This is messy.  First, it looks for dateIssued only because we have complex data for dates.  Ideally, this would
+        look for other things, but I don't know where to look for an exhaustive list for this.
+
+        Another possible issue: this looks for two types: dict and list.  If dateIssue is only one value, is it a dict
+        or an OrderedDict?
+        @todo: What does xmltodict do with single values? Should it be OrderedDict instead?
+        @todo: What other dates should this look for?
+
+        Returns:
+            Tuple: A tuple with a boolean of whether there is a date and a string of the xsd formatted date.
+
+        """
+        try:
+            if "dateIssued" in self.mods_dict["mods"]["originInfo"]:
+                if type(self.mods_dict["mods"]["originInfo"]["dateIssued"]) is dict:
+                    return (
+                        True,
+                        f"{str(arrow.get(self.mods_dict['mods']['originInfo']['dateIssued']['#text']).format('YYYY-MM-DD'))}T00:00:00Z",
+                    )
+                elif type(self.mods_dict["mods"]["originInfo"]["dateIssued"]) is list:
+                    for date in self.mods_dict["mods"]["originInfo"]["dateIssued"]:
+                        if "@encoding" in date:
+                            return (
+                                True,
+                                f"{str(arrow.get(date['#text']).format('YYYY-MM-DD'))}T00:00:00Z",
+                            )
+            else:
+                return False, ""
+        except KeyError:
+            return False, ""
+
     def build_iiif_descriptive_metadata(self):
-        return {
+        metadata = {
             "label": self.label,
             "description": self.description,
             "license": self.get_license_or_rights(),
             "attribution": self.get_attribution(),
             "metadata": self.get_other_metadata(),
         }
+        if self.navigation_date[0] is True:
+            metadata["navDate"] = self.navigation_date[1]
+        return metadata
 
 
 if __name__ == "__main__":
     x = MODSScraper("agrtfhs:2275")
-    print(x.build_iiif_descriptive_metadata()["metadata"])
+    print(x.build_iiif_descriptive_metadata())
