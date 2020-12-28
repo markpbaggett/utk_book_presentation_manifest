@@ -12,6 +12,7 @@ uuid = "*"
 xmltodict = "*"
 tripoli = "*"
 arrow = "*"
+argparse = "*"
 
 [requires]
 python_version = "3"
