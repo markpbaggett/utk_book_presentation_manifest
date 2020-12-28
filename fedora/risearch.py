@@ -149,9 +149,16 @@ class TuplesSearch(ResourceIndexSearch):
             f"<http://islandora.ca/ontology/relsext#> SELECT $collection FROM <#ri> WHERE {{ <info:fedora/{book_pid}> "
             f"fedora-rels-ext:isMemberOfCollection $collection . }}"
         )
-        return requests.get(f"{self.base_url}&query={sparql_query}").content.decode(
-            "utf-8"
+        results = (
+            requests.get(f"{self.base_url}&query={sparql_query}")
+            .content.decode("utf-8")
+            .split("\n")
         )
+        return [
+            result.replace("info:fedora/", "")
+            for result in results
+            if result.startswith("info:fedora")
+        ][0]
 
 
 if __name__ == "__main__":
