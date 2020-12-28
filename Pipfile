@@ -13,6 +13,7 @@ xmltodict = "*"
 tripoli = "*"
 arrow = "*"
 argparse = "*"
+tqdm = "*"
 
 [requires]
 python_version = "3"

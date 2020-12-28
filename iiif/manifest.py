@@ -1,4 +1,5 @@
 from uuid import uuid4
+from tqdm import tqdm
 import requests
 import json
 
@@ -102,7 +103,7 @@ class Manifest:
                 page[0],
                 f"{server}iiif/2/collections%7Eislandora%7Eobject%7E{page[0]}%7Edatastream%7EJP2/info.json",
             ).build_canvas()
-            for page in list_of_pages
+            for page in tqdm(list_of_pages)
         ]
 
     def __build_thumbnail_section(self):
