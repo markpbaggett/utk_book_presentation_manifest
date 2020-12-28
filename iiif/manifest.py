@@ -8,6 +8,7 @@ class Manifest:
         self,
         descriptive_metadata,
         pages,
+        collection_pid="",
         server_uri="https://digital.lib.utk.edu/",
         viewing_hint="paged",
         viewing_direction="left-to-right",
@@ -20,6 +21,7 @@ class Manifest:
         self.attribution = descriptive_metadata["attribution"]
         self.metadata = descriptive_metadata["metadata"]
         self.navigation_date = self.__check_for_navigation_date(descriptive_metadata)
+        self.collection = self.__process_within_value(collection_pid, server_uri)
         self.canvases = self.__get_canvases(pages, server_uri)
         self.viewing_hint = self.__validate_viewing_hint(viewing_hint)
         self.viewing_direction = self.__validate_viewing_direction(viewing_direction)
@@ -67,6 +69,8 @@ class Manifest:
         }
         if self.navigation_date != "":
             metadata["navDate"] = self.navigation_date
+        if self.collection != "":
+            metadata["within"] = self.collection
         return metadata
 
     @staticmethod
@@ -123,6 +127,13 @@ class Manifest:
     def __check_for_navigation_date(metadata):
         if "navDate" in metadata:
             return metadata["navDate"]
+        else:
+            return ""
+
+    @staticmethod
+    def __process_within_value(value, server_details):
+        if value != "":
+            return f"{server_details}/collections/islandora/object/{value}"
         else:
             return ""
 
@@ -191,6 +202,7 @@ if __name__ == "__main__":
         ("agrtfhs:2277", 15),
         ("agrtfhs:2276", 16),
     ]
+    within = "collections:agrtfhs"
     metadata = {
         "label": "Tennessee farm and home science, progress report 46, April - June 1963",
         "book_pid": "agrtfhs:2275",
@@ -215,7 +227,7 @@ if __name__ == "__main__":
             },
         ],
     }
-    manifest_object = Manifest(metadata, book_pages)
+    manifest_object = Manifest(metadata, book_pages, within)
     y = manifest_object.manifest
     j = json.dumps(y, indent=4)
     with open("sample_manifest.json", "w") as manifest:

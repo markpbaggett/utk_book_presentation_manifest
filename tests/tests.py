@@ -26,9 +26,10 @@ class PresentationManifestTester(unittest.TestCase):
             ("agrtfhs:2276", 16),
         ]
         self.metadata = MODSScraper("agrtfhs:2275").build_iiif_descriptive_metadata()
+        self.collection = "collections:agrtfhs"
         self.validator = IIIFValidator(debug=True, collect_warnings=False)
 
     def test_presentation_manifest(self):
-        manifest = Manifest(self.metadata, self.book_pages)
+        manifest = Manifest(self.metadata, self.book_pages, self.collection)
         self.validator.validate(manifest.manifest_json)
         self.assertTrue(self.validator.is_valid)
