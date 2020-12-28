@@ -27,8 +27,14 @@ class MODSScraper:
         Note: The 2.1 docs state this is "a human readable label, name or title for the resource. This property is
         intended to be displayed as a short, textual surrogate for the resource if a human needs to make a distinction
         between it and similar resources, for example between pages or between a choice of images to display.
+
+        @todo: This needs refinement.  Grabs first title value in a messy way that wasn't thought out very much.
         """
-        return self.mods_dict["mods"]["titleInfo"]["title"]
+        if type(self.mods_dict["mods"]["titleInfo"]) is list:
+            titles = [title["title"] for title in self.mods_dict["mods"]["titleInfo"]]
+            return titles[0]
+        else:
+            return self.mods_dict["mods"]["titleInfo"]["title"]
 
     def get_abstract(self):
         """
