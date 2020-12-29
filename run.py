@@ -42,7 +42,8 @@ if __name__ == "__main__":
         args.book_pid
     )
     metadata = MODSScraper(
-        args.book_pid, islandora_frontend=cleanup_server_name(args.server)
+        args.book_pid,
+        islandora_frontend=cleanup_server_name(f"{args.server}/collections/"),
     ).build_iiif_descriptive_metadata()
     manifest_object = Manifest(
         metadata,
