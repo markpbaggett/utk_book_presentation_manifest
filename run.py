@@ -49,7 +49,7 @@ if __name__ == "__main__":
         metadata,
         book_pages,
         collection_pid,
-        server_uri=cleanup_server_name(args.server),
+        server_uri=f"{cleanup_server_name(args.server)}/",
     )
     with open(args.filename, "w") as manifest:
         manifest.write(json.dumps(manifest_object.manifest, indent=4))
