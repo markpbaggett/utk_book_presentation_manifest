@@ -30,7 +30,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-s",
         "--server",
-        dest="filename",
+        dest="server",
         help="Specify a server.  This is the value that will be used for harvesting metadata and writing id values in the manifest.",
         default="https://digital.lib.utk.edu",
     )
