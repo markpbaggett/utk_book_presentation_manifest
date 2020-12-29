@@ -8,7 +8,7 @@ import json
 def cleanup_server_name(server_uri):
     if server_uri.endswith("/"):
         server_uri = server_uri[:-1]
-    return server_uri.replace("/collections")
+    return server_uri.replace("/collections", "")
 
 
 if __name__ == "__main__":
