@@ -29,5 +29,5 @@ if __name__ == "__main__":
     )
     metadata = MODSScraper(args.book_pid).build_iiif_descriptive_metadata()
     manifest_object = Manifest(metadata, book_pages, collection_pid)
-    with open("manifest.json", "w") as manifest:
+    with open(args.filename, "w") as manifest:
         manifest.write(json.dumps(manifest_object.manifest, indent=4))
