@@ -2,8 +2,8 @@ import requests
 
 
 class ResourceIndexSearch:
-    def __init__(self):
-        self.risearch_endpoint = "http://localhost:8080/fedora/risearch"
+    def __init__(self, risearch_endpoint="http://localhost:8080/fedora/risearch"):
+        self.risearch_endpoint = risearch_endpoint
 
     @staticmethod
     def escape_query(query):
@@ -81,7 +81,13 @@ class TriplesSearch(ResourceIndexSearch):
 
 
 class TuplesSearch(ResourceIndexSearch):
-    def __init__(self, language="sparql", riformat="CSV"):
+    def __init__(
+        self,
+        language="sparql",
+        riformat="CSV",
+        ri_endpoint="http://localhost:8080/fedora/risearch",
+    ):
+        super().__init__(ri_endpoint)
         ResourceIndexSearch.__init__(self)
         self.valid_languages = ("itql", "sparql")
         self.valid_formats = ("CSV", "Simple", "Sparql", "TSV")

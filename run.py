@@ -34,13 +34,20 @@ if __name__ == "__main__":
         help="Specify a server.  This is the value that will be used for harvesting metadata and writing id values in the manifest.",
         default="https://digital.lib.utk.edu",
     )
+    parser.add_argument(
+        "-r",
+        "--risearch",
+        dest="risearch",
+        help="Specify the uri to your risearch interface.  Defaults to http://localhost:8080/fedora/risearch.",
+        default="http://localhost:8080/fedora/risearch",
+    )
     args = parser.parse_args()
-    book_pages = TuplesSearch(language="sparql").get_pages_and_page_numbers(
-        args.book_pid
-    )
-    collection_pid = TuplesSearch(language="sparql").get_parent_collection(
-        args.book_pid
-    )
+    book_pages = TuplesSearch(
+        language="sparql", risearch_endpoint=args.risearch
+    ).get_pages_and_page_numbers(args.book_pid)
+    collection_pid = TuplesSearch(
+        language="sparql", risearch_endpoint=args.risearch
+    ).get_parent_collection(args.book_pid)
     metadata = MODSScraper(
         args.book_pid,
         islandora_frontend=f"{cleanup_server_name(args.server)}/collections/",
