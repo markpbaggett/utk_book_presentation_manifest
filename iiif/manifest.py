@@ -22,7 +22,9 @@ class Manifest:
     ):
         self.identifier = f"http://{uuid4()}"
         self.label = descriptive_metadata["label"]
-        self.related = f'{server_uri}/collections/islandora/object/{descriptive_metadata["book_pid"]}'
+        self.related = (
+            f'{server_uri}/collections/islandora/object/{descriptive_metadata["pid"]}'
+        )
         self.description = descriptive_metadata["description"]
         self.license = descriptive_metadata["license"]
         self.attribution = descriptive_metadata["attribution"]
@@ -219,7 +221,7 @@ if __name__ == "__main__":
     within = "collections:agrtfhs"
     metadata = {
         "label": "Tennessee farm and home science, progress report 46, April - June 1963",
-        "book_pid": "agrtfhs:2275",
+        "pid": "agrtfhs:2275",
         "description": "Quarterly newsletter from Knoxville, Tennessee, covering farming and home economics.",
         "license": "http://rightsstatements.org/vocab/NoC-US/1.0/",
         "attribution": "No Copyright - United States",

@@ -7,7 +7,7 @@ class MODSScraper:
     def __init__(
         self, book_pid, islandora_frontend="https://digital.lib.utk.edu/collections/"
     ):
-        self.book_pid = book_pid
+        self.pid = book_pid
         self.mods_xml = self.__get_mods(
             f"{islandora_frontend}/islandora/object/{book_pid}/datastream/MODS"
         )
@@ -181,7 +181,7 @@ class MODSScraper:
     def build_iiif_descriptive_metadata(self):
         metadata = {
             "label": self.label,
-            "book_pid": self.book_pid,
+            "pid": self.pid,
             "description": self.description,
             "license": self.get_license_or_rights(),
             "attribution": self.get_attribution(),
