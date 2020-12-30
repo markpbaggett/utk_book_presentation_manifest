@@ -43,10 +43,10 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     book_pages = TuplesSearch(
-        language="sparql", risearch_endpoint=args.risearch
+        language="sparql", ri_endpoint=args.risearch
     ).get_pages_and_page_numbers(args.book_pid)
     collection_pid = TuplesSearch(
-        language="sparql", risearch_endpoint=args.risearch
+        language="sparql", ri_endpoint=args.risearch
     ).get_parent_collection(args.book_pid)
     metadata = MODSScraper(
         args.book_pid,
