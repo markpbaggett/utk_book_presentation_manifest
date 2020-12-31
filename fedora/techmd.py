@@ -33,7 +33,7 @@ class TechnicalMetadataScraper:
         hours = int(duration_split[0]) * 60 * 60
         minutes = int(duration_split[1]) * 60
         milliseconds = int(duration_split[3]) * 0.001
-        return str(hours + minutes + int(duration_split[2]) + milliseconds)
+        return hours + minutes + int(duration_split[2]) + milliseconds
 
 
 if __name__ == "__main__":
