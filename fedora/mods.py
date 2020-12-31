@@ -6,13 +6,13 @@ import arrow
 class MODSScraper:
     def __init__(
         self,
-        book_pid,
+        fedora_pid,
         islandora_frontend="https://digital.lib.utk.edu/collections/",
         presentation_api_version=2,
     ):
-        self.pid = book_pid
+        self.pid = fedora_pid
         self.mods_xml = self.__get_mods(
-            f"{islandora_frontend}/islandora/object/{book_pid}/datastream/MODS"
+            f"{islandora_frontend}/islandora/object/{fedora_pid}/datastream/MODS"
         )
         self.mods_dict = xmltodict.parse(self.mods_xml)
         self.label = self.get_title()
