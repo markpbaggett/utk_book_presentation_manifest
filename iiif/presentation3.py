@@ -3,7 +3,22 @@ from fedora.techmd import TechnicalMetadataScraper
 import json
 
 
-class Manifest3:
+class Presentation3:
+    def __init__(self, server, pid):
+        self.server_uri = server
+        self.pid = pid
+
+    def generate_thumbnail(self):
+        return [
+            {
+                "id": f"{self.server_uri}collections/islandora/object/{self.pid}/datastream/TN",
+                "type": "Image",
+                "format": "image/png",
+            }
+        ]
+
+
+class Manifest3(Presentation3):
     def __init__(
         self,
         descriptive_metadata,
@@ -14,6 +29,7 @@ class Manifest3:
         self.id_prefix = id_prefix
         self.descriptive_metadata = descriptive_metadata
         self.server_uri = server_uri
+        Presentation3.__init__(self, server_uri, self.descriptive_metadata["pid"])
         self.manifest = self.initialize_manifest()
 
     def initialize_manifest(self):
@@ -24,7 +40,7 @@ class Manifest3:
             "label": self.descriptive_metadata["label"],
             "rights": self.descriptive_metadata["rights"],
             "metadata": self.descriptive_metadata["metadata"],
-            "thumbnail": self.__generate_thumbnail(),
+            "thumbnail": self.generate_thumbnail(),
         }
         if "summary" in self.descriptive_metadata:
             initial_manifest["summary"] = self.descriptive_metadata["summary"]
@@ -38,17 +54,8 @@ class Manifest3:
         ]
         return json.dumps(self.manifest, indent=4)
 
-    def __generate_thumbnail(self):
-        return [
-            {
-                "id": f"{self.server_uri}collections/islandora/object/{self.descriptive_metadata['pid']}/datastream/TN",
-                "type": "Image",
-                "format": "image/png",
-            }
-        ]
 
-
-class AudioCanvas:
+class AudioCanvas(Presentation3):
     def __init__(
         self,
         fedora_pid,
@@ -58,6 +65,7 @@ class AudioCanvas:
         self.id = f"{id_prefix}/{fedora_pid}/canvas"
         self.pid = fedora_pid
         self.audio_uri = f"{server_uri}/collections/islandora/object/{fedora_pid}/datastream/PROXY_MP3/view"
+        Presentation3.__init__(self, server_uri, fedora_pid)
         self.duration = TechnicalMetadataScraper(self.pid).get_nlnz_duration()
 
     def build_canvas(self):
@@ -65,6 +73,7 @@ class AudioCanvas:
             "id": self.id,
             "type": "Canvas",
             "duration": self.duration,
+            "thumbnail": self.generate_thumbnail(),
             "items": [
                 {
                     "id": f"{self.id}/page",
