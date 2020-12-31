@@ -24,6 +24,7 @@ class Manifest3:
             "label": self.descriptive_metadata["label"],
             "rights": self.descriptive_metadata["rights"],
             "metadata": self.descriptive_metadata["metadata"],
+            "thumbnail": self.__generate_thumbnail(),
         }
         if "summary" in self.descriptive_metadata:
             initial_manifest["summary"] = self.descriptive_metadata["summary"]
@@ -36,6 +37,15 @@ class Manifest3:
             ).build_canvas()
         ]
         return json.dumps(self.manifest, indent=4)
+
+    def __generate_thumbnail(self):
+        return [
+            {
+                "id": f"{self.server_uri}collections/islandora/object/{self.descriptive_metadata['pid']}/datastream/TN",
+                "type": "Image",
+                "format": "image/png",
+            }
+        ]
 
 
 class AudioCanvas:
