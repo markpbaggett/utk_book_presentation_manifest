@@ -25,7 +25,7 @@ class PresentationManifestTester(unittest.TestCase):
             ("agrtfhs:2277", 15),
             ("agrtfhs:2276", 16),
         ]
-        self.metadata = MODSScraper("agrtfhs:2275").build_iiif_descriptive_metadata()
+        self.metadata = MODSScraper("agrtfhs:2275").build_iiif_descriptive_metadata_v2()
         self.collection = "collections:agrtfhs"
         self.validator = IIIFValidator(debug=True, collect_warnings=False)
 
