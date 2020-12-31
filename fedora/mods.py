@@ -50,7 +50,10 @@ class MODSScraper:
         A manifest must have at least one label, such as the name of the object or title of the intellectual work that
         it embodies.
         """
-        return self.mods_dict["mods"]["abstract"]
+        try:
+            return self.mods_dict["mods"]["abstract"]
+        except KeyError:
+            return ""
 
     def get_license_or_rights(self):
         """
