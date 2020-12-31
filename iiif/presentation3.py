@@ -1,6 +1,7 @@
 from fedora.mods import MODSScraper
 from fedora.techmd import TechnicalMetadataScraper
 import json
+import requests
 
 
 class Presentation3:
@@ -8,12 +9,21 @@ class Presentation3:
         self.server_uri = server
         self.pid = pid
 
+    @staticmethod
+    def __read_info_json(uri):
+        return requests.get(uri).json()
+
     def generate_thumbnail(self):
+        info = self.__read_info_json(
+            f"{self.server_uri}iiif/2/collections%7Eislandora%7Eobject%7E{self.pid}%7Edatastream%7ETN/info.json"
+        )
         return [
             {
-                "id": f"{self.server_uri}collections/islandora/object/{self.pid}/datastream/TN",
+                "id": f"{info['@id']}/full/full/1/default.png",
                 "type": "Image",
                 "format": "image/png",
+                "height": info["sizes"][1]["height"],
+                "width": info["sizes"][1]["width"],
             }
         ]
 
