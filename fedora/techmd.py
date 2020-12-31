@@ -17,6 +17,13 @@ class TechnicalMetadataScraper:
         return xmltodict.parse(requests.get(uri).content.decode("utf-8"))
 
     def get_nlnz_duration(self):
+        """Gets the value of nlnz duration in seconds for easy share to IIIF manifest.txt
+
+        Example:
+            >>> TechnicalMetadataScraper("wwiioh:2001").get_nlnz_duration()
+            2825.339
+
+        """
         duration = [
             duration["#text"]
             for duration in self.tech_md_dict["fits"]["metadata"]["audio"]["duration"]
