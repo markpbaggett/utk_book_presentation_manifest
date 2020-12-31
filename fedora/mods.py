@@ -5,7 +5,10 @@ import arrow
 
 class MODSScraper:
     def __init__(
-        self, book_pid, islandora_frontend="https://digital.lib.utk.edu/collections/"
+        self,
+        book_pid,
+        islandora_frontend="https://digital.lib.utk.edu/collections/",
+        presentation_api_version=2,
     ):
         self.pid = book_pid
         self.mods_xml = self.__get_mods(
@@ -55,15 +58,33 @@ class MODSScraper:
         except KeyError:
             return ""
 
+    def __get_abstract_v3(self):
+        if self.get_abstract() != "":
+            return {
+                "label": {"en": ["Abstract"]},
+                "value": {"en": [self.get_abstract()]},
+            }
+        else:
+            return ""
+
     def get_license_or_rights(self):
         """
         Gets the value of accessCondition/@xlink:href
 
-        Note: The 2.1 docs state this is, "a link to an external resource that describes the license or rights
+        v2.1.1 Note: The 2.1 docs state this is, "a link to an external resource that describes the license or rights
         statement under which the resource may be used. The rationale for this being a URI and not a human readable
         label is that typically there is one license for many resources, and the text is too long to be displayed to
         the user along with the object. If displaying the text is a requirement, then it is recommended to include the
         information using the attribution property instead.
+
+        v3.0.0 Note: A string that identifies a license or rights statement that applies to the content of the resource,
+        such as the JSON of a Manifest or the pixels of an image. The value must be drawn from the set of Creative
+        Commons license URIs, the RightsStatements.org rights statement URIs, or those added via the extension
+        mechanism. The inclusion of this property is informative, and for example could be used to display an icon
+        representing the rights assertions. If displaying rights information directly to the user is the desired
+        interaction, or a publisher-defined label is needed, then it is recommended to include the information using
+        the requiredStatement property or in the metadata property. The value must be a string. If the value is drawn
+        from Creative Commons or RightsStatements.org, then the string must be a URI defined by that specification.
         """
         return self.mods_dict["mods"]["accessCondition"]["@xlink:href"]
 
@@ -120,6 +141,12 @@ class MODSScraper:
         else:
             return []
 
+    def __get_topics_v3(self):
+        if len(self.get_topics()) != 0:
+            return {"label": {"en": ["Topics"]}, "value": {"en": self.get_topics()}}
+        else:
+            return ""
+
     def get_publisher(self):
         """
         Gets the publisher of a book if one exists.
@@ -127,6 +154,15 @@ class MODSScraper:
         """
         if "publisher" in self.mods_dict["mods"]["originInfo"]:
             return self.mods_dict["mods"]["originInfo"]["publisher"]
+        else:
+            return ""
+
+    def __get_publisher_v3(self):
+        if self.get_publisher() != "":
+            return {
+                "label": {"en": ["Publisher"]},
+                "value": {"en": [self.get_publisher()]},
+            }
         else:
             return ""
 
@@ -181,7 +217,7 @@ class MODSScraper:
         except KeyError:
             return False, ""
 
-    def build_iiif_descriptive_metadata(self):
+    def build_iiif_descriptive_metadata_v2(self):
         metadata = {
             "label": self.label,
             "pid": self.pid,
@@ -194,7 +230,26 @@ class MODSScraper:
             metadata["navDate"] = self.navigation_date[1]
         return metadata
 
+    def build_iiif_descriptive_metadata_v3(self):
+        metadata = {
+            "label": {"en": [self.label]},
+            "pid": self.pid,
+            "rights": self.get_license_or_rights(),
+            "metadata": self.build_iiif_v3_metadata_section(),
+        }
+        if self.get_abstract() != "":
+            metadata["summary"] = {"en": [self.get_abstract()]}
+        return metadata
+
+    def build_iiif_v3_metadata_section(self):
+        metadata_methods = (
+            self.__get_abstract_v3(),
+            self.__get_publisher_v3(),
+            self.__get_topics_v3(),
+        )
+        return [method for method in metadata_methods if method != ""]
+
 
 if __name__ == "__main__":
     x = MODSScraper("agrtfhs:2275")
-    print(x.build_iiif_descriptive_metadata())
+    print(x.build_iiif_descriptive_metadata_v3())
