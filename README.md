@@ -1,11 +1,10 @@
-# UTK Book to IIIF Presentation Manifest
+# UTK Islandora 7 Presentation Manifest Generator
 
 ![Run Tests](https://github.com/markpbaggett/utk_book_presentation_manifest/workflows/Run%20Tests/badge.svg)
 
-Generates a 2.1.1 presentation manifest for a book from a UTK Islandora 7 object and serializes it to disk.
-3.0.0 coming soon.
+Generates presentation manifests for objects from UTK Islandora 7 repositories.
 
-This isn't intended for public use, but rather exploration.
+This isn't intended for public use, but rather thinking about future recipes for delivering UTK content models.
 
 ## Requirements
 
@@ -29,5 +28,5 @@ pipenv install
 
 ```shell script
 pipenv shell
-python run.py -b agrtfhs:2275 -f manifest.json
+python run.py -p agrtfhs:2275 -f manifest.json
 ```
