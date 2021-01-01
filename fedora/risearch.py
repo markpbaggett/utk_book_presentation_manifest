@@ -178,11 +178,16 @@ class TuplesSearch(ResourceIndexSearch):
             f"fedora-rels-ext:isMemberOfCollection $collection ; fedora-model:hasModel $model . }}"
         )
         results = (
-            requests.get(f"{self.base_url}&query={sparql_query}")
-            .content.decode("utf-8")
-            .split("\n")
+            [
+                pair
+                for pair in requests.get(f"{self.base_url}&query={sparql_query}")
+                .content.decode("utf-8")
+                .split("\n")
+            ][2]
+            .replace("info:fedora/", "")
+            .split(",")
         )
-        return self.__clean_csv_results(results, "info:fedora/")
+        return results
 
 
 if __name__ == "__main__":
