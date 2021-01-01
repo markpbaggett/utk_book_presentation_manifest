@@ -167,6 +167,20 @@ class TuplesSearch(ResourceIndexSearch):
         ][0]
 
     def get_collection_and_content_model(self, pid):
+        """
+        Gets the collection a pid belongs to and its content model.
+
+        Args:
+            pid (str): the pid that you want to determine.
+        Returns:
+            list: A list with the collection pid in index 0 and the content model in index 1.
+
+        @todo: This assumes a pid only belongs to one collection.  This is naive and needs to be addressed.
+
+        Example:
+            >>> TuplesSearch(language="sparql").get_collection_and_content_model("agrtfhs:2275")
+            ['collections:agrtfhs', 'islandora:bookCModel']
+        """
         if self.language != "sparql":
             raise Exception(
                 f"You must use sparql as the language for this method.  You used {self.language}."
