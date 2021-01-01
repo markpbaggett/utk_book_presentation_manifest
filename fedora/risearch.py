@@ -109,12 +109,12 @@ class TuplesSearch(ResourceIndexSearch):
                 )
         return sorted(results, key=lambda x: x[1])
 
-    def get_pages_and_page_numbers(self, book_pid):
+    def get_pages_and_page_numbers(self, pid):
         """
         Returns a sorted list of tuples with the page and page number for the book.
 
         Args:
-            book_pid (str): The PID of the book.
+            pid (str): The PID of the book.
 
         Returns:
             list: A sorted list of tuples with the pid of the page and the corresponding page number.
@@ -135,7 +135,7 @@ class TuplesSearch(ResourceIndexSearch):
             f"PREFIX fedora-model: <info:fedora/fedora-system:def/model#> PREFIX fedora-rels-ext: "
             f"<info:fedora/fedora-system:def/relations-external#> PREFIX isl-rels-ext: "
             f"<http://islandora.ca/ontology/relsext#> SELECT $page $numbers FROM <#ri> WHERE {{ $page "
-            f"fedora-rels-ext:isMemberOf <info:fedora/{book_pid}> ; isl-rels-ext:isPageNumber $numbers .}}"
+            f"fedora-rels-ext:isMemberOf <info:fedora/{pid}> ; isl-rels-ext:isPageNumber $numbers .}}"
         )
         results = (
             requests.get(f"{self.base_url}&query={sparql_query}")
@@ -144,7 +144,7 @@ class TuplesSearch(ResourceIndexSearch):
         )
         return self.__clean_csv_results(results, "info:fedora/")
 
-    def get_parent_collection(self, book_pid):
+    def get_parent_collection(self, pid):
         if self.language != "sparql":
             raise Exception(
                 f"You must use sparql as the language for this method.  You used {self.language}."
@@ -152,7 +152,7 @@ class TuplesSearch(ResourceIndexSearch):
         sparql_query = self.escape_query(
             f"PREFIX fedora-model: <info:fedora/fedora-system:def/model#> PREFIX fedora-rels-ext: "
             f"<info:fedora/fedora-system:def/relations-external#> PREFIX isl-rels-ext: "
-            f"<http://islandora.ca/ontology/relsext#> SELECT $collection FROM <#ri> WHERE {{ <info:fedora/{book_pid}> "
+            f"<http://islandora.ca/ontology/relsext#> SELECT $collection FROM <#ri> WHERE {{ <info:fedora/{pid}> "
             f"fedora-rels-ext:isMemberOfCollection $collection . }}"
         )
         results = (
@@ -166,9 +166,28 @@ class TuplesSearch(ResourceIndexSearch):
             if result.startswith("info:fedora")
         ][0]
 
+    def get_collection_and_content_model(self, pid):
+        if self.language != "sparql":
+            raise Exception(
+                f"You must use sparql as the language for this method.  You used {self.language}."
+            )
+        sparql_query = self.escape_query(
+            f"PREFIX fedora-model: <info:fedora/fedora-system:def/model#> PREFIX fedora-rels-ext: "
+            f"<info:fedora/fedora-system:def/relations-external#> PREFIX isl-rels-ext: "
+            f"<http://islandora.ca/ontology/relsext#> SELECT $collection $model FROM <#ri> WHERE {{ <info:fedora/{pid}> "
+            f"fedora-rels-ext:isMemberOfCollection $collection ; fedora-model:hasModel $model . }}"
+        )
+        results = (
+            requests.get(f"{self.base_url}&query={sparql_query}")
+            .content.decode("utf-8")
+            .split("\n")
+        )
+        return self.__clean_csv_results(results, "info:fedora/")
+
 
 if __name__ == "__main__":
     # x = TuplesSearch(language="sparql").get_pages_and_page_numbers("agrtfhs:2275")
     # x = TriplesSearch(language="sparql").get_pages_and_page_numbers("agrtfhs:2275")
-    x = TuplesSearch(language="sparql").get_parent_collection("agrtfhs:2275")
+    x = TuplesSearch(language="sparql").get_collection_and_content_model("agrtfhs:2275")
     print(x)
+    print(type(x))
