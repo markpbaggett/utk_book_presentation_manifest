@@ -46,7 +46,7 @@ if __name__ == "__main__":
     collection_and_model = TuplesSearch(
         language="sparql", ri_endpoint=args.risearch
     ).get_collection_and_content_model(args.pid)
-    supported_content_models: ("islandora:bookCModel", "islandora:sp-audioCModel")
+    supported_content_models = ("islandora:bookCModel", "islandora:sp-audioCModel")
     if collection_and_model[1] == "islandora:bookCModel":
         book_pages = TuplesSearch(
             language="sparql", ri_endpoint=args.risearch
