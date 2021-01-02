@@ -84,6 +84,7 @@ class AudioCanvas(Presentation3):
             "type": "Canvas",
             "duration": self.duration,
             "thumbnail": self.generate_thumbnail(),
+            "accompanyingCanvas": ImageCanvas(self.pid, "TN").build_canvas(),
             "items": [
                 {
                     "id": f"{self.id}/page",
@@ -107,8 +108,86 @@ class AudioCanvas(Presentation3):
         }
 
 
+class ImageCanvas(Presentation3):
+    """@todo: This was built originally for supporting accompanying canvases so this may need to be heavily overhauled for use by other canvas types.py
+
+    Also, as far as I can tell Mirador doesn't actually support accompanyingCanvases.  Ask about this to IIIF community.
+    """
+
+    def __init__(
+        self,
+        fedora_pid,
+        datastream="TN",
+        server_uri="https://digital.lib.utk.edu/",
+        id_prefix="https://raw.githubusercontent.com/utkdigitalinitiatives/utk_iiif_recipes/main/raw_manifests",
+    ):
+        self.id = f"{id_prefix}/{fedora_pid}/{datastream}/canvas"
+        self.pid = fedora_pid
+        self.datastream = datastream
+        self.server = server_uri
+        self.info = self.__get_info_json()
+        self.height = self.info["height"]
+        self.width = self.info["width"]
+        Presentation3.__init__(self, server_uri, fedora_pid)
+
+    def build_canvas(self):
+        return {
+            "id": self.id,
+            "type": "Canvas",
+            "label": self.__get_label(),
+            "height": self.height,
+            "width": self.width,
+            "items": [self.__get_items()],
+        }
+
+    def __get_label(self):
+        return {
+            "en": [
+                f"Image representing the {self.datastream} datastream for {self.pid} at {self.server}"
+            ]
+        }
+
+    def __get_info_json(self):
+        return requests.get(
+            f"{self.server}iiif/2/collections~islandora~object~{self.pid}~datastream~{self.datastream}/info.json"
+        ).json()
+
+    def __get_items(self):
+        return [
+            {
+                "id": f"{self.id}/canvas/annotation/page",
+                "type": "AnnotationPage",
+                "items": [
+                    {
+                        "id": f"{self.id}/canvas/annotation/image",
+                        "type": "Annotation",
+                        "motivation": "painting",
+                        "body": {
+                            "id": f"{self.server}iiif/2/collections~islandora~object~{self.pid}~datastream~{self.datastream}/full/full/0/default.png",
+                            "type": "Image",
+                            "format": "image/png",
+                            "height": self.height,
+                            "width": self.width,
+                            "service": [
+                                {
+                                    "@id": self.info["@id"],
+                                    "@type": "ImageService2",
+                                    "profile": "http://iiif.io/api/image/2/level2.json",
+                                }
+                            ],
+                        },
+                        "target": f"{self.id}/canvas/annotation/page",
+                    }
+                ],
+            }
+        ]
+
+
 if __name__ == "__main__":
-    x = MODSScraper("wwiioh:2001").build_iiif_descriptive_metadata_v3()
-    test = Manifest3(x).build_audio_manifest()
-    with open("sample_manifest.json", "w") as manifest:
-        manifest.write(test)
+    # x = MODSScraper("wwiioh:2001").build_iiif_descriptive_metadata_v3()
+    # test = Manifest3(x).build_audio_manifest()
+    # with open("sample_manifest.json", "w") as manifest:
+    #     manifest.write(test)
+
+    img = ImageCanvas("wwiioh:2001").build_canvas()
+    print(json.dumps(img))
