@@ -212,6 +212,23 @@ class MODSScraper:
                                 True,
                                 f"{str(arrow.get(date['#text']).format('YYYY-MM-DD'))}T00:00:00Z",
                             )
+            if "dateCreated" in self.mods_dict["mods"]["originInfo"]:
+                if (
+                    type(self.mods_dict["mods"]["originInfo"]["dateCreated"]) is dict
+                    and "@encoding"
+                    in self.mods_dict["mods"]["originInfo"]["dateCreated"]
+                ):
+                    return (
+                        True,
+                        f"{str(arrow.get(self.mods_dict['mods']['originInfo']['dateCreated']['#text']).format('YYYY-MM-DD'))}T00:00:00Z",
+                    )
+                elif type(self.mods_dict["mods"]["originInfo"]["dateCreated"]) is list:
+                    for date in self.mods_dict["mods"]["originInfo"]["dateCreated"]:
+                        if "@encoding" in date:
+                            return (
+                                True,
+                                f"{str(arrow.get(date['#text']).format('YYYY-MM-DD'))}T00:00:00Z",
+                            )
             else:
                 return False, ""
         except KeyError:
@@ -239,6 +256,8 @@ class MODSScraper:
         }
         if self.get_abstract() != "":
             metadata["summary"] = {"en": [self.get_abstract()]}
+        if self.navigation_date[0] is True:
+            metadata["navDate"] = self.navigation_date[1]
         return metadata
 
     def build_iiif_v3_metadata_section(self):
@@ -251,5 +270,5 @@ class MODSScraper:
 
 
 if __name__ == "__main__":
-    x = MODSScraper("agrtfhs:2275")
+    x = MODSScraper("wwiioh:2001")
     print(x.build_iiif_descriptive_metadata_v3())
