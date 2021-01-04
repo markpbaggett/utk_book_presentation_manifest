@@ -49,6 +49,22 @@ class Manifest3(Presentation3):
             "type": "Manifest",
             "label": self.descriptive_metadata["label"],
             "rights": self.descriptive_metadata["rights"],
+            "seeAlso": [
+                {
+                    "id": f"{self.server_uri}/collections/islandora/object/{self.descriptive_metadata['pid']}/datastream/MODS",
+                    "type": "Dataset",
+                    "label": {"en": ["Descriptive Metadata in MODS"]},
+                    "format": "application/xml",
+                    "profile": "http://www.loc.gov/standards/mods/v3/mods-3-5.xsd",
+                },
+                {
+                    "id": f"{self.server_uri}/collections/islandora/object/{self.descriptive_metadata['pid']}/datastream/RELS-EXT",
+                    "type": "Dataset",
+                    "label": {"en": ["Fedora Structural Metadata"]},
+                    "format": "	application/rdf+xml",
+                    "profile": "https://fedora.info/definitions/1/0/fedora-relsext-ontology.rdfs",
+                },
+            ],
             "metadata": self.descriptive_metadata["metadata"],
             "thumbnail": self.generate_thumbnail(),
         }
