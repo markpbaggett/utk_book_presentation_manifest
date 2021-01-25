@@ -86,7 +86,10 @@ class MODSScraper:
         the requiredStatement property or in the metadata property. The value must be a string. If the value is drawn
         from Creative Commons or RightsStatements.org, then the string must be a URI defined by that specification.
         """
-        return self.mods_dict["mods"]["accessCondition"]["@xlink:href"]
+        try:
+            return self.mods_dict["mods"]["accessCondition"]["@xlink:href"]
+        except KeyError:
+            return ""
 
     def get_attribution(self):
         """
@@ -99,7 +102,10 @@ class MODSScraper:
         display. If there are multiple values of the same or unspecified language, then all of those values must be
         displayed.
         """
-        return self.mods_dict["mods"]["accessCondition"]["#text"]
+        try:
+            return self.mods_dict["mods"]["accessCondition"]["#text"]
+        except KeyError:
+            return ""
 
     def get_other_metadata(self):
         """
