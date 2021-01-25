@@ -158,9 +158,10 @@ class MODSScraper:
         Gets the publisher of a book if one exists.
 
         """
-        if "publisher" in self.mods_dict["mods"]["originInfo"]:
-            return self.mods_dict["mods"]["originInfo"]["publisher"]
-        else:
+        try:
+            if "publisher" in self.mods_dict["mods"]["originInfo"]:
+                return self.mods_dict["mods"]["originInfo"]["publisher"]
+        except KeyError:
             return ""
 
     def __get_publisher_v3(self):
