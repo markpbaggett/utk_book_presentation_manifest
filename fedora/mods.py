@@ -276,6 +276,38 @@ class MODSScraper:
         return [method for method in metadata_methods if method != ""]
 
 
+class MODSParser:
+    def __init__(
+        self,
+        fedora_pid,
+        fedora_url="http://localhost:8080",
+        auth=("fedoraAdmin", "fedoraAdmin"),
+    ):
+        self.pid = fedora_pid
+        self.url = fedora_url
+        self.auth = (auth,)
+        self.mods_xml = self.__get_mods(
+            f"{fedora_url}/fedora/objects/{fedora_pid}/datastreams/MODS/content", auth
+        )
+        self.mods_dict = xmltodict.parse(self.mods_xml)
+
+    @staticmethod
+    def __get_mods(uri, auth):
+        return requests.get(uri, auth=auth).content.decode("utf-8")
+
+    def get_label(self):
+        """Find a label for the object based on this xpath: mods:titleInfo[not(@type="alternative")]/mods:title"""
+        if type(self.mods_dict["mods"]["titleInfo"]) is list:
+            titles = [
+                title["title"]
+                for title in self.mods_dict["mods"]["titleInfo"]
+                if "@type" not in title
+            ]
+            return titles[0]
+        else:
+            return self.mods_dict["mods"]["titleInfo"]["title"]
+
+
 if __name__ == "__main__":
-    x = MODSScraper("wwiioh:2001")
-    print(x.build_iiif_descriptive_metadata_v3())
+    x = MODSParser("test:42")
+    print(x.get_label())
